@@ -4,7 +4,7 @@
 @using RecipeAI.Components.Layout
 @using RecipeAI.Models
 @rendermode InteractiveServer
-@inject NavigationManager Navigation
+@inject NavigationManager navigation
 
 
 <TopNavMenu />
@@ -63,7 +63,7 @@
                             </table>
                         </div>
                         <div class="text-center mt-3">
-                            <button type="button" class="btn btn-success rounded">Generate Recipe</button>
+                            <button type="button" class="btn btn-success rounded" @onclick="OnSubmit">Generate Recipe</button>
                         </div>
                     </EditForm>
                 </div>
@@ -110,5 +110,9 @@
     private void RemoveIngredient(Guid id)
     {
         ingredients.Remove(ingredients.First(x=>x.Id==id));
+    }
+    private void OnSubmit()
+    {
+        navigation.NavigateTo("/mealIdeas");
     }
 }
