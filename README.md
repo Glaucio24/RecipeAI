@@ -7,6 +7,7 @@ FEATURES
 -Customizable Meal Types: Select meal types ( Breakfast, Lunch, Dinner, Dessert) to narrow down recipe suggestions.
 
 -Ingredient Management: Add, remove, and clear ingredients for flexible recipe generation.
+------------------------------------------------------------------------------------------------------------
 
 TECHNOLOGIES USED
 
@@ -14,7 +15,7 @@ TECHNOLOGIES USED
 
 -C# / .NET 8: Backend development and API integration.
 
-AI Framework OpenAI API for recipe generation.
+-AI Framework OpenAI API for recipe generation.
 
-Bootstrap: For responsive design and styling.
+-Bootstrap: For responsive design and styling.
 
