@@ -3,9 +3,9 @@
 @using System.ComponentModel.DataAnnotations
 @using RecipeAI.Components.Layout
 @using RecipeAI.Models
-@rendermode InteractiveServer
+@inject RecipeState recipeState
 @inject NavigationManager navigation
-
+@rendermode InteractiveServer
 
 <TopNavMenu />
 <PageTitle>Recipe AI - Create Meal</PageTitle>
@@ -73,13 +73,24 @@
 </div>
 
 @code {
+    [CascadingParameter]
+    private RecipeState? rState { get; set; }
+
     private EditContext? editcontext;
     private List<Ingredient> ingredients = new List<Ingredient>();
     private Meal meal = new();
 
     protected override void OnInitialized()
     {
-        editcontext = new EditContext(meal);
+        if (recipeState is null)
+        {
+            navigation.NavigateTo("/", forceLoad: true);
+            return;
+        }
+        editcontext = new(meal);
+
+        meal.MealTime = recipeState.MealTime;
+        ingredients = recipeState.Ingredients;
     }
 
     public class Meal
@@ -87,7 +98,6 @@
         public string? MealTime { get; set; }
         public string? Ingredient { get; set; }
     }
-
 
     private void AddIngredient()
     {
@@ -104,15 +114,18 @@
 
     private void ClearForm()
     {
-        ingredients.Clear();  
+        ingredients.Clear();
     }
 
     private void RemoveIngredient(Guid id)
     {
-        ingredients.Remove(ingredients.First(x=>x.Id==id));
+        ingredients.Remove(ingredients.First(x => x.Id == id));
     }
+
     private void OnSubmit()
     {
+        recipeState.MealTime = meal.MealTime;
+        recipeState.Ingredients = ingredients;
         navigation.NavigateTo("/mealIdeas");
     }
 }

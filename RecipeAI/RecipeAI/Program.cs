@@ -1,5 +1,6 @@
 using RecipeAI.Client.Pages;
 using RecipeAI.Components;
+using RecipeAI.Components.Layout;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+builder.Services.AddScoped<RecipeState>();
+
 
 var app = builder.Build();
 
