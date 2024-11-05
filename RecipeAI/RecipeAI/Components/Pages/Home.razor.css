@@ -1,0 +1,89 @@
+﻿
+
+.recipe-ai {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+    .recipe-ai::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('img/designer (14).jpeg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        filter: blur(8px);
+        z-index: -1;
+    }
+
+    .recipe-ai .home-container {
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        position: relative;
+        z-index: 1;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .recipe-ai .logo {
+        width: 200px;
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .recipe-ai .get-started-button {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        color: white;
+        background-color: #007bff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .recipe-ai .get-started-button:hover {
+            background-color: #0056b3;
+        }
+
+    .recipe-ai .footer {
+        position: absolute;
+        bottom: 10px;
+        width: 100%;
+        text-align: center;
+        font-size: 1.1em;
+        font-weight: 300;
+        color: #f3f3f3;
+    }
+
+/* New navbar styling */
+.navbar {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1;
+}
+
+    .navbar a {
+        font-size: 1em;
+        text-decoration: none;
+        color: #fff;
+        padding: 8px 15px;
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+        .navbar a:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }

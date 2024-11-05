@@ -1,0 +1,17 @@
+﻿
+.topNavbg {
+    width: 100%;
+    position: fixed; 
+    top: 0;
+    left: 0;
+    z-index: 1000; 
+    border: none; 
+    background-color: var(--bs-danger-bg-subtle);
+  
+}
+
+/* Remove margin and padding on body and html to avoid unwanted space */
+body, html {
+    margin: 0;
+    padding: 0;
+}

@@ -1,0 +1,19 @@
+﻿.card {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--bs-danger);
+}
+
+.container {
+    padding-top: 50px;
+    padding-bottom:50px;
+}
+.card-header {
+    background-color: var(--bs-danger-bg-subtle);
+    padding: 20px;
+}
+
+.card-body {
+    padding: 20px;
+}
+
