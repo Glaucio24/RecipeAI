@@ -1,7 +1,4 @@
-RecipeAI is an artificial intelligence tool that generates meal recipes based on a user’s ingredient input. 
-This app helps users discover new meal ideas tailored to the ingredients they have on hand.
-
-Features
+FEATURES
 
 -AI-Powered Recipe Generation: Creates recipe suggestions using AI based on the ingredients you enter.
 
@@ -11,7 +8,7 @@ Features
 
 -Ingredient Management: Add, remove, and clear ingredients for flexible recipe generation.
 
-Technologies Used
+TECHNOLOGIES USED
 
 -Blazor: Frontend web framework for building interactive UIs.
 
