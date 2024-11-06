@@ -2,14 +2,18 @@ using RecipeAI.Client.Pages;
 using RecipeAI.Components;
 using RecipeAI.Components.Layout;
 
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
-builder.Services.AddScoped<RecipeState>();
+builder.Services.AddSingleton<RecipeState>();
+builder.Services.AddHttpClient();
 
+//builder.Services.AddScoped( sp => new HttpClient { BaseAddress = new Uri("https://localhost:7261") });
 
 var app = builder.Build();
 
