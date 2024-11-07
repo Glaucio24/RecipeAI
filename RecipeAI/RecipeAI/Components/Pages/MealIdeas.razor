@@ -1,81 +1,51 @@
-﻿@page "/mealIdeas"
-@using System.Text.Json
-
-@inject NavigationManager navigation
-@inject HttpClient Http;
+﻿@using System.Text.Json
+@inject IHttpClientFactory ClientFactory
 @rendermode InteractiveServer
+@page "/mealIdeas"
+@using System.Text.Json.Serialization
+@using RecipeAI.Data
 
-@if(loaded==true)
+
+
+
+@if (!loaded || ideas is null)
 {
-<div class="container">
-
-    <h3 class="mt-5">Pick a Choice from Generated Meals</h3>
-    <div class="list-group">
-        @foreach (var idea in ideas)
-        {
-            <button class="list-group-item list-group-action list-group-item-success p-2">
-                <div class="d-flex w-100 justify-content-sm-between">
-                    <h2 class="mb-1 fw-bold-bold">@idea.Title</h2>
-                    <p class="mb-1">@idea.Description</p>
-                </div>                                                                                                                                    
-            </button>
-        }
-    </div>
+    <div class="container">
+        <h3>Loading...</h3>
     </div>
 }
 else
-{
+{ 
     <div class="container">
-       <h3>Loading...</h3>
+        <h3 class="mt-5">Pick a Choice from Generated Meals</h3>
+        <div class="list-group mt-5 mb-5">
+            @foreach (var idea in ideas)
+            {
+                <button class="list-group-item list-group-item-action list-group-item-danger p-2">
+                    <div class="d-flex w-100 justify-content-sm-between">
+                        <h2 class="mb-1 fw-bold">@idea.Title</h2>
+                    </div>
+                    <p class="mb-1">@idea.Description</p>
+                </button>
+            }
+        </div>
     </div>
 }
+
 @code {
     private List<Idea> ideas = new List<Idea>();
-    private bool loaded = false;
+    private bool loaded;
 
-    [CascadingParameter]
-    private RecipeState recipeState { get; set; }
-
-    private readonly JsonSerializerOptions _jsonOptions = new()
-        {
-            PropertyNameCaseInsensitive = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
-        };
-
-
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        
-      
-            loaded = true;
-          
-            StateHasChanged();
-       
-    }
-    private async void GetIdeas()
-    {
-        string baseuri = "Recipe/GetRecipeIdeas";
-        loaded = false;
+        // Sample data for testing purposes
+        ideas = SampleData.GetRecipeIdeas();
 
-        RecipeParms recipeParms = new RecipeParms()
-            {
-                MealTime = recipeState.MealTime,
-                Ingredients = recipeState.Ingredients
-            };
-       
-        try
-        {
-            HttpResponseMessage response = await Http.PostAsJsonAsync(baseuri, recipeParms, _jsonOptions);
-            response.EnsureSuccessStatusCode();
-            ideas = (await response.Content.ReadFromJsonAsync<List<Idea>>())!;
-            recipeState.Ideas = ideas;
-            loaded = true;
-            StateHasChanged();
-        }
-        catch
-        {
-            Console.WriteLine("Error: Could not fetch recipe ideas");
-        }
+        loaded = true;
+        await Task.Delay(100); // Simulate slight delay for testing
+
+        StateHasChanged();
     }
+
+   
 }

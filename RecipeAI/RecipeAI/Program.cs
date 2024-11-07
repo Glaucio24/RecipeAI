@@ -1,25 +1,38 @@
+using Microsoft.AspNetCore.Components;
 using RecipeAI.Client.Pages;
 using RecipeAI.Components;
 using RecipeAI.Components.Layout;
+using RecipeAI.Models;
+using System.Diagnostics;
+using System.Net.Http;
 
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddSingleton<RecipeState>();
 builder.Services.AddHttpClient();
 
-//builder.Services.AddScoped( sp => new HttpClient { BaseAddress = new Uri("https://localhost:7261") });
+
+builder.Services.AddHttpClient("RecipeAPI", client =>
+{
+    client.BaseAddress = new Uri("GetRecipeIdeas"); // Use your server’s URL
+});
+
+
+
+
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+   
     app.UseWebAssemblyDebugging();
 }
 else

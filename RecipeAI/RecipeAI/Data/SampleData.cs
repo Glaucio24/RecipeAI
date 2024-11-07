@@ -1,10 +1,12 @@
-﻿
+﻿using Microsoft.AspNetCore.Components;
 using RecipeAI.Models;
+
 
 namespace RecipeAI.Data
 {
     public static class SampleData
     {
+
         public static List<Idea> RecipeIdeas = new()
         {
             new Idea
@@ -35,5 +37,12 @@ namespace RecipeAI.Data
                 Description = "Ginger snaps are a classic favorite. With just a few ingredients and even fewer steps this recipe for fabulous, spicy cookies is truly a snap to make."
             },
         };
+
+        // Method to return RecipeIdeas list
+        public static List<Idea> GetRecipeIdeas()
+        {
+            return RecipeIdeas;
+        }
     }
 }
+
