@@ -6,7 +6,6 @@
 @using RecipeAI.Components
 @inject RecipeState recipeState
 @inject NavigationManager navigation
-
 @rendermode InteractiveServer
 
 
@@ -104,7 +103,7 @@
                     Id = Guid.NewGuid(),
                     Description = meal.Ingredient
                 });
-            meal.Ingredient = string.Empty; 
+            meal.Ingredient = string.Empty;
         }
     }
 
@@ -118,10 +117,19 @@
         ingredients.Remove(ingredients.First(x => x.Id == id));
     }
 
-    private void OnSubmit()
+    private async Task OnSubmit()
     {
         recipeState.MealTime = meal.MealTime;
         recipeState.Ingredients = ingredients;
+
+        // Extract ingredient descriptions
+        var ingredientDescriptions = ingredients.Select(i => i.Description).ToList();
+
+        // Fetch ideas from OpenAI
+
+        // Store the ideas in the state for retrieval on the /mealIdeas page
+
+        // Navigate to the ideas page
         navigation.NavigateTo("/mealIdeas");
     }
 }

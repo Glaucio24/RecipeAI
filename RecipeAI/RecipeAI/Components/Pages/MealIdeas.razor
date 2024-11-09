@@ -1,23 +1,27 @@
-﻿@using System.Text.Json
+﻿@page "/mealIdeas"
 @inject IHttpClientFactory ClientFactory
+@inject RecipeState recipeState
+@using System.Text.Json
+@using RecipeAI.Services
+@inject IOpenAIAPI openAIService
 @rendermode InteractiveServer
-@page "/mealIdeas"
-@using System.Text.Json.Serialization
-@using RecipeAI.Data
 
 
 
+<div class="container mt-5">
+    <h3 class="mb-3">Recipe Ideas for @recipeState.MealTime</h3>
+</div>
 
-@if (!loaded || ideas is null)
+@if (loading)
 {
-    <div class="container">
+    <div class="container mt-3">
         <h3>Loading...</h3>
     </div>
 }
-else
-{ 
+else if (ideas != null && ideas.Count > 1)
+{
     <div class="container">
-        <h3 class="mt-5">Pick a Choice from Generated Meals</h3>
+        <h3>Pick a Choice from Generated Meals</h3>
         <div class="list-group mt-5 mb-5">
             @foreach (var idea in ideas)
             {
@@ -31,21 +35,25 @@ else
         </div>
     </div>
 }
+else
+{
+    <div class="container mt-3">
+        <h4>No recipe ideas found. Please check the ingredients or try again later.</h4>
+    </div>
+}
 
 @code {
     private List<Idea> ideas = new List<Idea>();
-    private bool loaded;
+    private bool loading;
+    private readonly IOpenAIAPI _openAIservice;// The Open AI interface looks good now you just need to make sure the api model work for fucntion and render open ai corerectly on this page right here.
 
     protected override async Task OnInitializedAsync()
     {
-        // Sample data for testing purposes
-        ideas = SampleData.GetRecipeIdeas();
-
-        loaded = true;
-        await Task.Delay(100); // Simulate slight delay for testing
-
-        StateHasChanged();
+            // figure out what goes in here i have a good feeling it will work perfectly 
     }
 
    
+
+
 }
+

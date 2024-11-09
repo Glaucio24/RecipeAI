@@ -3,8 +3,10 @@ using RecipeAI.Client.Pages;
 using RecipeAI.Components;
 using RecipeAI.Components.Layout;
 using RecipeAI.Models;
+using RecipeAI.Services;
 using System.Diagnostics;
 using System.Net.Http;
+
 
 
 
@@ -14,17 +16,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
-builder.Services.AddSingleton<RecipeState>();
+
 builder.Services.AddHttpClient();
 
-
-builder.Services.AddHttpClient("RecipeAPI", client =>
-{
-    client.BaseAddress = new Uri("GetRecipeIdeas"); // Use your server’s URL
-});
-
-
-
+builder.Services.AddScoped<IOpenAIAPI, OpenAIService>();
+builder.Services.AddSingleton<RecipeState>();
 
 
 var app = builder.Build();

@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using System.Linq.Expressions;
 using System;
 using System.Reflection.Metadata.Ecma335;
+using RecipeAI.Components.Pages;
 
 namespace RecipeAI.Services
 {
@@ -69,7 +70,8 @@ namespace RecipeAI.Services
         public OpenAIService(IConfiguration configuration)
         {
             _configuration = configuration;
-            var apiKey = _configuration["OpenAIService:OpenAiKey"] ?? Environment.GetEnvironmentVariable("OpenAiKey");
+            var apiKey = _configuration["OpenAI:OpenAiKey"] ?? Environment.GetEnvironmentVariable("OpenAiKey");
+
 
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", apiKey);
@@ -84,22 +86,22 @@ namespace RecipeAI.Services
 
         public async Task<List<Idea>> CreateRecipeIdeas(string mealtime, List<string> ingredientList)
         {
-            string url = $"{_baseUrl}chat/completions";
-            string systemPrompt = "You are a world-renewed chef. I will send you a list of ingredients and meal time. You will respond with 5 ideas for dishes. ";
-            string userPrompt = "";
+            string url = $"{_baseUrl}"; // Fixed endpoint URL
+            string systemPrompt = "You are a world-renewed chef. I will send you a list of ingredients and meal time. You will respond with 5 ideas for dishes.";
+            string userPrompt = "";           
             string ingredientPrompt = "";
 
             string ingredients = string.Join(",", ingredientList);
 
             if (string.IsNullOrEmpty(ingredients))
             {
-                ingredientPrompt = "Suggest some ingredients for me";
+                ingredientPrompt = "Suggest some ingredients for me.";
             }
             else
             {
                 ingredientPrompt = $"I have {ingredients}";
             }
-            userPrompt = $"The meal I want to cook is {mealtime}. {ingredientPrompt}";
+            userPrompt=$"The meal I want to cook is {mealtime}. {ingredientPrompt}";
 
 
             ChatMessage systemMessage = new()
@@ -111,8 +113,9 @@ namespace RecipeAI.Services
             ChatMessage userMessage = new()
             {
                 Role = "user",
-                Content = $"{systemPrompt}"
+                Content = $"{userPrompt}"
             };
+
             ChatRequest request = new()
             {
                 Model = "gpt-3.5-turbo-0125",
@@ -121,23 +124,27 @@ namespace RecipeAI.Services
                 FunctionCall = new { Name = _ideaFunction.Name }
             };
 
+            // Send the request to OpenAI API
             HttpResponseMessage httpResponse = await _httpClient.PostAsJsonAsync(url, request, _jsonOptions);
-            ChatResponse? response = await httpResponse.Content.ReadFromJsonAsync<ChatResponse>();
 
-            //Get the first message in the function
-            ChatFunctionResponse? functionResponse = response.Choices.
-                FirstOrDefault(m => m.Message?.FunctionCall is not null)?
-                .Message?
-                .FunctionCall;
-            Result<List<Idea>> ideasResult = new();
+            ChatResponse? response = await httpResponse.Content.ReadFromJsonAsync<ChatResponse>();       
+          
+            // Get the function response containing the recipe ideas
+            ChatFunctionResponse? functionResponse = response?.Choices
+                                                                      .FirstOrDefault(m => m.Message?.FunctionCall is not null)?
+                                                                        .Message?
+                                                                            .FunctionCall;
 
+            Result<List<Idea>>? ideasResult = new();
+
+            // Deserialize the arguments to extract the recipe ideas
             if (functionResponse?.Arguments is not null)
             {
                 try
                 {
+                    // Return the recipe ideas directly
                     ideasResult = JsonSerializer.Deserialize<Result<List<Idea>>>(functionResponse.Arguments, _jsonOptions);
                 }
-
                 catch (Exception ex)
                 {
                     ideasResult = new()
@@ -146,9 +153,10 @@ namespace RecipeAI.Services
                         ErrorMessage = await httpResponse.Content.ReadAsStringAsync()
                     };
                 }
-            }
+            }           
             return ideasResult?.Data ?? new List<Idea>();
         }
-        
+
+
     }
 }
