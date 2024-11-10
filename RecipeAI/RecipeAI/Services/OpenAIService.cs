@@ -118,7 +118,7 @@ namespace RecipeAI.Services
 
             ChatRequest request = new()
             {
-                Model = "gpt-3.5-turbo-0125",
+                Model = "gpt-3.5-turbo",
                 Messages = new[] { systemMessage, userMessage },
                 Functions = new[] { _ideaFunction },
                 FunctionCall = new { Name = _ideaFunction.Name }
