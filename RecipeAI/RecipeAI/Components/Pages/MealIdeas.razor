@@ -3,27 +3,30 @@
 @inject RecipeState recipeState
 @using System.Text.Json
 @using RecipeAI.Services
+@inject RecipeState recipeState
 @inject IOpenAIAPI openAIService
+@inject NavigationManager navigation
 @rendermode InteractiveServer
+
 
 <div class="container mt-5">
     <h3 class="mb-3">Recipe Ideas for @recipeState.MealTime</h3>
 </div>
 
-@if (loading)
+@if (recipeState.Ideas == null || recipeState.Ideas.Count == 0)
 {
     <div class="container mt-3">
-        <h3>Loading...</h3>
+        <h4>No recipe ideas found. Please check the ingredients or try again later.</h4>
     </div>
 }
-else if (ideas != null && ideas.Count > 0)
+else
 {
     <div class="container">
         <h3>Pick a Choice from Generated Meals</h3>
         <div class="list-group mt-5 mb-5">
-            @foreach (var idea in ideas)
+            @foreach (var (idea, index) in recipeState.Ideas.Select((idea, idx) => (idea, idx)))
             {
-                <button class="list-group-item list-group-item-action list-group-item-danger p-2">
+                <button @onclick="() => GetRecipe(index)" class="list-group-item list-group-item-action list-group-item-danger p-2">
                     <div class="d-flex w-100 justify-content-sm-between">
                         <h2 class="mb-1 fw-bold">@idea.Title</h2>
                     </div>
@@ -33,36 +36,15 @@ else if (ideas != null && ideas.Count > 0)
         </div>
     </div>
 }
-else
-{
-    <div class="container mt-3">
-        <h4>No recipe ideas found. Please check the ingredients or try again later.</h4>
-    </div>
-}
 
 @code {
-    private List<Idea> ideas = new List<Idea>();
-    private bool loading = false;
-
-    protected override async Task OnInitializedAsync()
+    private void GetRecipe(int index)
     {
-        loading = true;  // Show loading indicator
-        try
+        // Validate the index before navigating
+        if (index >= 0 && recipeState.Ideas != null && index < recipeState.Ideas.Count)
         {
-            // Use MealTime and Ingredients from RecipeState
-            string mealtime = recipeState.MealTime ?? "Breakfast";
-            List<string> ingredientList = recipeState.Ingredients.Select(i => i.Description).ToList();
-
-            // Call OpenAIService to generate recipe ideas
-            ideas = await openAIService.CreateRecipeIdeas(mealtime, ingredientList);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching recipe ideas: {ex.Message}");
-        }
-        finally
-        {
-            loading = false; // Hide loading indicator
+            // Navigate to the detailed recipe page with the correct index
+            navigation.NavigateTo($"/mealRecipe/{index}");
         }
     }
 }

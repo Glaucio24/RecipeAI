@@ -5,6 +5,8 @@
 @using RecipeAI.Models
 @using RecipeAI.Components
 @inject RecipeState recipeState
+@using RecipeAI.Services
+@inject IOpenAIAPI openAIService
 @inject NavigationManager navigation
 @rendermode InteractiveServer
 
@@ -75,10 +77,10 @@
 </div>
 
 @code {
-
     private EditContext? editcontext;
     private List<Ingredient> ingredients = new List<Ingredient>();
     private Meal meal = new();
+    private bool loading = false;
 
     protected override void OnInitialized()
     {
@@ -119,17 +121,29 @@
 
     private async Task OnSubmit()
     {
+        loading = true;
+      
+
+       // Save meal information to RecipeState
         recipeState.MealTime = meal.MealTime;
         recipeState.Ingredients = ingredients;
 
-        // Extract ingredient descriptions
-        var ingredientDescriptions = ingredients.Select(i => i.Description).ToList();
-
-        // Fetch ideas from OpenAI
-
-        // Store the ideas in the state for retrieval on the /mealIdeas page
-
-        // Navigate to the ideas page
-        navigation.NavigateTo("/mealIdeas");
+        try
+        {
+           // Generate recipe ideas using OpenAI
+            var ingredientDescriptions = ingredients.Select(i => i.Description).ToList();
+            recipeState.Ideas = await openAIService.CreateRecipeIdeas(meal.MealTime ?? "Breakfast", ingredientDescriptions);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error generating recipes: {ex.Message}");
+        }
+        finally
+        {
+            loading = false;
+            navigation.NavigateTo("/mealIdeas");
+        }
+    
     }
+   
 }

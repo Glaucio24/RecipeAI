@@ -1,0 +1,29 @@
+﻿@page "/mealRecipe/{index:int}"
+@using RecipeAI
+@inject NavigationManager Navigation
+@inject RecipeState recipeState
+@rendermode InteractiveServer
+
+<div class="container mt-5">
+    <h3>Meal Recipe</h3>
+    <p><strong>Recipe Index:</strong> @Index</p>
+    <p><strong>Recipe Title:</strong> @Title</p>
+</div>
+
+@code {
+    [Parameter] public int Index { get; set; }
+    private string? Title;
+
+    protected override void OnInitialized()
+    {
+        // Ensure recipeState is loaded and that the Index is valid
+        if (recipeState?.Ideas != null && Index >= 0 && Index < recipeState.Ideas.Count)
+        {
+            Title = recipeState.Ideas[Index].Title;  // Access directly by Index
+        }
+        else
+        {
+            Title = "Recipe not found";
+        }
+    }
+}
