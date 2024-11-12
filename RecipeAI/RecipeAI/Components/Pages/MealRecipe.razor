@@ -40,21 +40,20 @@
                 </ul>
             </div>
             <div class="col">
-                <h2>Instructions</h2>
-                <p>@Instructions</p>
+                <h2>Instructions</h2>                
+                <p>@Instructions</p>              
             </div>
         </div>
     }
 </div>
 
 @code {
-    [Parameter]
-    public int Index { get; set; }
+    [Parameter] public int Index { get; set; }
 
     private bool isLoading = true;
     private string? Title;
     private string? Description;
-    private List<string> Ingredients = new List<string>();  // List for ingredients
+    private List<string> Ingredients = new List<string>();
     private string? Instructions;
     private RecipeImage? recipeImage;
 
@@ -66,29 +65,40 @@
             Title = recipeIdea.Title;
             Description = recipeIdea.Description;
 
-            // Fetch recipe details asynchronously
-            var recipeTask = openAIService.CreateRecipe(recipeIdea.Title, recipeState.IngredientList);
-            var imageTask = openAIService.CreateRecipeImage(recipeIdea.Title);
-
-            // Wait for both tasks to complete
-            var recipe = await recipeTask;
-            recipeImage = await imageTask;
-
-            if (recipe != null)
+            // Check if the recipe is already cached
+            if (!recipeState.CachedRecipes.ContainsKey(Index) || !recipeState.CachedRecipeImages.ContainsKey(Index))
             {
-                // Convert ingredients array to List<string> if it's an array
-                Ingredients = recipe.Ingredients?.ToList() ?? new List<string>();
+                // Fetch recipe details and image if not cached
+                var recipeTask = openAIService.CreateRecipe(recipeIdea.Title, recipeState.IngredientList);
+                var imageTask = openAIService.CreateRecipeImage(recipeIdea.Title);
 
-                // Handle instructions (ensure it's a string)
-                if (recipe.Instructions != null)
+                // Wait for both tasks to complete
+                var recipe = await recipeTask;
+                recipeImage = await imageTask;
+
+                if (recipe != null)
                 {
-                    // If Instructions is an array, join it into a single string
-                    Instructions = string.Join(" ", recipe.Instructions) ?? "No instructions available.";
+                    // Cache the fetched recipe and image
+                    recipeState.CachedRecipes[Index] = recipe;
+                    recipeState.CachedRecipeImages[Index] = recipeImage;
+
+                    Ingredients = recipe.Ingredients?.ToList() ?? new List<string>();
+                    Instructions = recipe.Instructions != null
+                        ? string.Join(" ", recipe.Instructions)
+                        : "No instructions available.";
                 }
-                else
-                {
-                    Instructions = "No instructions available.";
-                }
+            }
+            else
+            {
+                // Use the cached data
+                var cachedRecipe = recipeState.CachedRecipes[Index];
+                var cachedImage = recipeState.CachedRecipeImages[Index];
+
+                Ingredients = cachedRecipe.Ingredients?.ToList() ?? new List<string>();
+                Instructions = cachedRecipe.Instructions != null
+                    ? string.Join(" ", cachedRecipe.Instructions)
+                    : "No instructions available.";
+                recipeImage = cachedImage;
             }
         }
         else

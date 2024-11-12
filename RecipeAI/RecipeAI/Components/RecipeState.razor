@@ -7,7 +7,9 @@
     public RecipeImage? CurrentRecipeImage { get; set; }
     public List<string> IngredientList { get; set; } = new();
 
-   
+    // Add a property to cache the recipe details by Index
+    public Dictionary<int, Recipe> CachedRecipes { get; set; } = new();
+    public Dictionary<int, RecipeImage> CachedRecipeImages { get; set; } = new();
  }
 
 
