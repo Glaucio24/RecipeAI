@@ -47,7 +47,7 @@ namespace RecipeAI.Data
         public static Recipe Recipe = new()
         {
             Title = "Ginger Snaps",
-             
+            Summary="I am greatuful for life. God has been witnh me in ever step out of the way. Even tho I make mistakes purposefully he continues to show me mercy thanmk you lord!",
             Ingredients = new[]
       {
                 "1 cup packed brown sugar",
@@ -70,12 +70,7 @@ namespace RecipeAI.Data
                 "Bake for 10 to 12 minutes in the preheated oven, or until center is firm. Cool on wire racks.",
             },
 
-            Summary = new[]
-            {
-                "Roll dough into 1 1/4-inch balls. Roll each ball in white sugar before placing 2 inches apart on ungreased cookie sheets.",
-                  "Mix together brown sugar, oil, molasses, and egg in a large bowl.",
-                     "Preheat the oven to 375 degrees F (190 degrees C)."
-            }
+            
         };
 
         public static RecipeImage RecipeImage = new()
