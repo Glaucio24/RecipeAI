@@ -1,63 +1,101 @@
-﻿@page "/mealRecipe/{index:int}"
-@using RecipeAI.Models
+﻿@page "/mealRecipe/{Index:int}"
+@using RecipeAI
+@inject NavigationManager Navigation
 @inject RecipeState recipeState
 @using RecipeAI.Services
 @inject IOpenAIAPI openAIService
-@inject NavigationManager navigation
 @rendermode InteractiveServer
 
-
-@code {
-    [Parameter] public int index { get; set; }
-    private Recipe? recipe;
-    private RecipeImage? recipeImage;
-    private bool isLoading = true;
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if (index >= 0 && recipeState.Ideas != null && index < recipeState.Ideas.Count)
-        {
-            var recipeIdea = recipeState.Ideas[index];
-            recipe = await openAIService.CreateRecipe(recipeIdea.Title, recipeState.IngredientList);
-            recipeImage = await openAIService.CreateRecipeImage(recipe?.Title ?? "");
-
-            isLoading = false;
-        }
-    }
-}
-
-<div class="container mt-5">
+<div class="container mt-5 h-100">
     @if (isLoading)
     {
-        <h4>Loading recipe details...</h4>
-    }
-    else if (recipe != null)
-    {
-        <h3>@recipe.Title</h3>
-        <p><b>Summary:</b> @recipe.Summary</p>
-        <h4>Ingredients:</h4>
-        <ul>
-            @foreach (var ingredient in recipe.Ingredients ?? Array.Empty<string>())
-            {
-                <li>@ingredient</li>
-            }
-        </ul>
-        <h4>Instructions:</h4>
-        <ol>
-            @foreach (var step in recipe.Instructions ?? Array.Empty<string>())
-            {
-                <li>@step</li>
-            }
-        </ol>
-        @if (recipeImage?.Data?.FirstOrDefault()?.Url != null)
-        {
-            <div class="mt-4">
-                <img src="@recipeImage.Data.First().Url" alt="@recipe.Title" class="img-fluid" />
-            </div>
-        }
+        <p>Loading...</p>
     }
     else
     {
-        <h4>Recipe details could not be loaded. Please try again.</h4>
+        <div class="d-flex flex-column flex-lg-row justify-content-start">
+            <div class="text-center text-lg-start">
+                @if (recipeImage?.Data != null && recipeImage.Data.Length > 0)
+                {
+                    <img class="rounded-3" src="@recipeImage.Data[0].Url" alt="Recipe Image" />
+                }
+                else
+                {
+                    <p>No image available</p>
+                }
+            </div>
+            <div class="flex-grow-1 px-3">
+                <h1 class="fw-bold">@Title</h1>
+                <p>@Description</p>
+            </div>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 mt-3">
+            <div class="col">
+                <h2>Ingredients</h2>
+                <ul>
+                    @foreach (var ingredient in Ingredients)
+                    {
+                        <li>@ingredient</li>
+                    }
+                </ul>
+            </div>
+            <div class="col">
+                <h2>Instructions</h2>
+                <p>@Instructions</p>
+            </div>
+        </div>
     }
 </div>
+
+@code {
+    [Parameter]
+    public int Index { get; set; }
+
+    private bool isLoading = true;
+    private string? Title;
+    private string? Description;
+    private List<string> Ingredients = new List<string>();  // List for ingredients
+    private string? Instructions;
+    private RecipeImage? recipeImage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (recipeState?.Ideas != null && Index >= 0 && Index < recipeState.Ideas.Count)
+        {
+            var recipeIdea = recipeState.Ideas[Index];
+            Title = recipeIdea.Title;
+            Description = recipeIdea.Description;
+
+            // Fetch recipe details asynchronously
+            var recipeTask = openAIService.CreateRecipe(recipeIdea.Title, recipeState.IngredientList);
+            var imageTask = openAIService.CreateRecipeImage(recipeIdea.Title);
+
+            // Wait for both tasks to complete
+            var recipe = await recipeTask;
+            recipeImage = await imageTask;
+
+            if (recipe != null)
+            {
+                // Convert ingredients array to List<string> if it's an array
+                Ingredients = recipe.Ingredients?.ToList() ?? new List<string>();
+
+                // Handle instructions (ensure it's a string)
+                if (recipe.Instructions != null)
+                {
+                    // If Instructions is an array, join it into a single string
+                    Instructions = string.Join(" ", recipe.Instructions) ?? "No instructions available.";
+                }
+                else
+                {
+                    Instructions = "No instructions available.";
+                }
+            }
+        }
+        else
+        {
+            Title = "Recipe not found";
+        }
+
+        isLoading = false; // Set loading to false after everything is loaded
+    }
+}

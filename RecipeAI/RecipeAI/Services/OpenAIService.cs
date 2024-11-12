@@ -251,26 +251,42 @@ namespace RecipeAI.Services
 
         public async Task<RecipeImage?> CreateRecipeImage(string recipeTitle)
         {
-            string Url = $"{_baseUrl}";
-            string userPrompt = $"Create a restaurant product shot for {recipeTitle}";
+            string url = "https://api.openai.com/v1/images/generations";
+            string userPrompt = $"Create a high-quality restaurant product shot for {recipeTitle}";
 
-            ImageGenerationRequest request = new()
+            // Construct the request object for OpenAI's DALL-E endpoint
+            var request = new
             {
-                Prompt = userPrompt,
+                prompt = userPrompt,
+                size = "1024x1024", // Specify the image size
+                n = 1 // Request a single image
             };
 
-            HttpResponseMessage httpResponse=await _httpClient.PostAsJsonAsync(Url,request, _jsonOptions);
-            RecipeImage? recipeImage = null;
+            HttpResponseMessage httpResponse = await _httpClient.PostAsJsonAsync(url, request, _jsonOptions);
 
+            RecipeImage? recipeImage = null;
             try
             {
-                recipeImage = await httpResponse.Content.ReadFromJsonAsync<RecipeImage>();
+                // Deserialize the response into your RecipeImage model
+                recipeImage = await httpResponse.Content.ReadFromJsonAsync<RecipeImage>(_jsonOptions);
+
+                // Check if Data array has an image URL
+                if (recipeImage?.Data?.Length > 0)
+                {
+                    Console.WriteLine("Image URL: " + recipeImage.Data[0].Url);
+                }
+                else
+                {
+                    Console.WriteLine("Error: No image data returned.");
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                Console.WriteLine("Error: Recipe Image could not be retreived");  
+                Console.WriteLine("Error: Recipe image could not be retrieved. Details: " + ex.Message);
             }
             return recipeImage;
         }
+
+
     }
 }
