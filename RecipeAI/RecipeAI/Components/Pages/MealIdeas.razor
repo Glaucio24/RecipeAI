@@ -40,11 +40,14 @@ else
 @code {
     private void GetRecipe(int index)
     {
-        // Validate the index before navigating
-        if (index >= 0 && recipeState.Ideas != null && index < recipeState.Ideas.Count)
+        if (recipeState.Ideas != null && recipeState.Ideas.Count > index)
         {
-            // Navigate to the detailed recipe page with the correct index
             navigation.NavigateTo($"/mealRecipe/{index}");
         }
+        else
+        {
+            Console.WriteLine("Recipe list is empty or index is out of range.");
+        }
     }
+
 }

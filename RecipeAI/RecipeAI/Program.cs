@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using RecipeAI.Client.Pages;
+using RecipeAI.Client;
 using RecipeAI.Components;
 using RecipeAI.Components.Layout;
 using RecipeAI.Models;

@@ -1,29 +1,63 @@
 ﻿@page "/mealRecipe/{index:int}"
-@using RecipeAI
-@inject NavigationManager Navigation
+@using RecipeAI.Models
 @inject RecipeState recipeState
+@using RecipeAI.Services
+@inject IOpenAIAPI openAIService
+@inject NavigationManager navigation
 @rendermode InteractiveServer
 
-<div class="container mt-5">
-    <h3>Meal Recipe</h3>
-    <p><strong>Recipe Index:</strong> @Index</p>
-    <p><strong>Recipe Title:</strong> @Title</p>
-</div>
 
 @code {
-    [Parameter] public int Index { get; set; }
-    private string? Title;
+    [Parameter] public int index { get; set; }
+    private Recipe? recipe;
+    private RecipeImage? recipeImage;
+    private bool isLoading = true;
 
-    protected override void OnInitialized()
+    protected override async Task OnParametersSetAsync()
     {
-        // Ensure recipeState is loaded and that the Index is valid
-        if (recipeState?.Ideas != null && Index >= 0 && Index < recipeState.Ideas.Count)
+        if (index >= 0 && recipeState.Ideas != null && index < recipeState.Ideas.Count)
         {
-            Title = recipeState.Ideas[Index].Title;  // Access directly by Index
-        }
-        else
-        {
-            Title = "Recipe not found";
+            var recipeIdea = recipeState.Ideas[index];
+            recipe = await openAIService.CreateRecipe(recipeIdea.Title, recipeState.IngredientList);
+            recipeImage = await openAIService.CreateRecipeImage(recipe?.Title ?? "");
+
+            isLoading = false;
         }
     }
 }
+
+<div class="container mt-5">
+    @if (isLoading)
+    {
+        <h4>Loading recipe details...</h4>
+    }
+    else if (recipe != null)
+    {
+        <h3>@recipe.Title</h3>
+        <p><b>Summary:</b> @recipe.Summary</p>
+        <h4>Ingredients:</h4>
+        <ul>
+            @foreach (var ingredient in recipe.Ingredients ?? Array.Empty<string>())
+            {
+                <li>@ingredient</li>
+            }
+        </ul>
+        <h4>Instructions:</h4>
+        <ol>
+            @foreach (var step in recipe.Instructions ?? Array.Empty<string>())
+            {
+                <li>@step</li>
+            }
+        </ol>
+        @if (recipeImage?.Data?.FirstOrDefault()?.Url != null)
+        {
+            <div class="mt-4">
+                <img src="@recipeImage.Data.First().Url" alt="@recipe.Title" class="img-fluid" />
+            </div>
+        }
+    }
+    else
+    {
+        <h4>Recipe details could not be loaded. Please try again.</h4>
+    }
+</div>

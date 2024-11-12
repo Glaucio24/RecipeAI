@@ -43,6 +43,50 @@ namespace RecipeAI.Data
         {
             return RecipeIdeas;
         }
+
+        public static Recipe Recipe = new()
+        {
+            Title = "Ginger Snaps",
+             
+            Ingredients = new[]
+      {
+                "1 cup packed brown sugar",
+                "3/4 cup vegetable oil",
+                "1/4 cup molasses",
+                "1 large egg",
+                "2 cups all-purpose flour",
+                "2 teaspoons baking soda",
+                "1 teaspoon ground ginger",
+                "1 teaspoon ground cinnamon",
+                "3/4 teaspoon ground cloves",
+                "1/4 teaspoon salt",
+            },
+            Instructions = new[]
+      {
+                "Preheat the oven to 375 degrees F (190 degrees C).",
+                "Mix together brown sugar, oil, molasses, and egg in a large bowl.",
+                "Combine flour, baking soda, ginger, cinnamon, cloves, and salt; stir into the molasses mixture.",
+                "Roll dough into 1 1/4-inch balls. Roll each ball in white sugar before placing 2 inches apart on ungreased cookie sheets.",
+                "Bake for 10 to 12 minutes in the preheated oven, or until center is firm. Cool on wire racks.",
+            },
+
+            Summary = new[]
+            {
+                "Roll dough into 1 1/4-inch balls. Roll each ball in white sugar before placing 2 inches apart on ungreased cookie sheets.",
+                  "Mix together brown sugar, oil, molasses, and egg in a large bowl.",
+                     "Preheat the oven to 375 degrees F (190 degrees C)."
+            }
+        };
+
+        public static RecipeImage RecipeImage = new()
+        {
+            Data = new ImageData[] {
+                new ImageData()
+                {
+                    Url = "https://www.allrecipes.com/thmb/nX1dNGl1mKTUOLCKTkRmhPkdohE=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/5969369-682611ebae5a42ddbcaaa90c27b3e1fd.jpg"
+                }
+            }
+        };
     }
 }
 
