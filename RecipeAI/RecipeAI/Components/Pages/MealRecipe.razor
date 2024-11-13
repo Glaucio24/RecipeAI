@@ -4,6 +4,7 @@
 @inject RecipeState recipeState
 @using RecipeAI.Services
 @inject IOpenAIAPI openAIService
+@inject IJSRuntime Js
 @rendermode InteractiveServer
 
 <div class="container mt-5 h-100">
@@ -17,7 +18,7 @@
             <div class="text-center text-lg-start">
                 @if (recipeImage?.Data != null && recipeImage.Data.Length > 0)
                 {
-                    <img class="rounded-3" src="@recipeImage.Data[0].Url" alt="Recipe Image" />
+                    <img class="rounded-3 img-fluid" src="@recipeImage.Data[0].Url" alt="Recipe Image" />
                 }
                 else
                 {
@@ -27,6 +28,9 @@
             <div class="flex-grow-1 px-3">
                 <h1 class="fw-bold">@Title</h1>
                 <p>@Description</p>
+                <div class="text-end">
+                    <button class="btn btn-danger d-print-none" @onclick="Print">Print</button>
+                </div>
             </div>
         </div>
         <div class="row row-cols-1 row-cols-md-2 mt-3">
@@ -107,5 +111,10 @@
         }
 
         isLoading = false; // Set loading to false after everything is loaded
+    }
+
+    private async Task Print()
+    {
+        await Js.InvokeVoidAsync("printInvoke");
     }
 }
