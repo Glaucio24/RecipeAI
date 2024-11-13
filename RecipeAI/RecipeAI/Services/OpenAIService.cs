@@ -258,7 +258,7 @@ namespace RecipeAI.Services
             var request = new
             {
                 prompt = userPrompt,
-                size = "1024x1024", // Specify the image size
+                size = "512x512", // Specify the image size
                 n = 1 // Request a single image
             };
 

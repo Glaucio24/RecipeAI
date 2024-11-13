@@ -3,51 +3,54 @@
 @inject RecipeState recipeState
 @using System.Text.Json
 @using RecipeAI.Services
-@inject RecipeState recipeState
 @inject IOpenAIAPI openAIService
 @inject NavigationManager navigation
 @rendermode InteractiveServer
 
-
 <div class="container mt-5">
     <h3 class="mb-3">Recipe Ideas for @recipeState.MealTime</h3>
 </div>
-
-@if (recipeState.Ideas == null || recipeState.Ideas.Count == 0)
+@if (isLoading)
 {
-    <div class="container mt-3">
-        <h4>No recipe ideas found. Please check the ingredients or try again later.</h4>
-    </div>
+   <AISpinner />
 }
 else
 {
-    <div class="container">
-        <h3>Pick a Choice from Generated Meals</h3>
-        <div class="list-group mt-5 mb-5">
+        <div class="container">
+            <h3>Pick a Choice from Generated Meals</h3>
+            <div class="list-group mt-5 mb-5">
             @foreach (var (idea, index) in recipeState.Ideas.Select((idea, idx) => (idea, idx)))
             {
-                <button @onclick="() => GetRecipe(index)" class="list-group-item list-group-item-action list-group-item-danger p-2">
-                    <div class="d-flex w-100 justify-content-sm-between">
-                        <h2 class="mb-1 fw-bold">@idea.Title</h2>
-                    </div>
-                    <p class="mb-1">@idea.Description</p>
-                </button>
+                        <button @onclick="() => GetRecipe(index)" class="list-group-item list-group-item-action list-group-item-danger p-2">
+                            <div class="d-flex w-100 justify-content-sm-between">
+                                <h2 class="mb-1 fw-bold">@idea.Title</h2>
+                            </div>
+                            <p class="mb-1">@idea.Description</p>
+                        </button>
             }
+            </div>
         </div>
-    </div>
 }
 
 @code {
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = false;
+    }
+
     private void GetRecipe(int index)
     {
         if (recipeState.Ideas != null && recipeState.Ideas.Count > index)
         {
-            navigation.NavigateTo($"/mealRecipe/{index}");
+            isLoading = true;
+            StateHasChanged(); // Display the spinner immediately
+            navigation.NavigateTo($"/mealRecipe/{index}", forceLoad: true);
         }
         else
         {
             Console.WriteLine("Recipe list is empty or index is out of range.");
         }
     }
-
 }
