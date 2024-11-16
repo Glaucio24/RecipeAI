@@ -22,8 +22,6 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<IOpenAIAPI, OpenAIService>();
 builder.Services.AddSingleton<RecipeState>();
 
-
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
